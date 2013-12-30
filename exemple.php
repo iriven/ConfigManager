@@ -18,7 +18,8 @@ $ini = new initool('./licence.ini');
 $ini->set('licence',$licence); //with section
 $test = array('test1'=>'my tester1','test2'=>'my tester2','test3'=>'my tester3');			
 $ini->set($test);	//no section	
-
+$ini->set('repo','centos');	//no section	
+$ini->set('linux','repo','fedora');	//with section
 
 echo $ini->get('test1').PHP_EOL;
 
