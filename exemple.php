@@ -15,7 +15,7 @@ $licence = array(   'software'=> 'Iriven MVC System', // Application Name,
                 );
  
 $ini = new initool('./licence.ini');
-$ini->set($licence,'licence'); //with section
+$ini->set('licence',$licence); //with section
  
 $array = array('test1'=>'my tester1','test2'=>'my tester2','test3'=>'my tester3');         
 $ini->set($array);   //no section    
