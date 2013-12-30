@@ -40,6 +40,7 @@ public function get($section=null, $item=null)
     return $this->datas[$section][$item];
 }
  
+
 public function set($section=null,$item,$value=null)
 {
 	$numarg = func_num_args();
@@ -79,18 +80,23 @@ public function set($section=null,$item,$value=null)
 	}
 	else
 	{
-		
-			$sectionsize=count($this->datas[$section]);		
-			if($sectionsize){
-				if(sizeof($item)=='1' and array_key_exists(key($item),$this->datas[$section]))
+		$sectionsize=count($this->datas[$section]);
+		$itemsize = count($item);
+		if($sectionsize)
+		{
+			if($itemsize=='1')
+			{
+				if(isset($this->datas[$section][key($item)]))
 				$this->datas[$section][key($item)] = array_merge($this->datas[$section][key($item)],$item[key($item)]);
-				elseif(sizeof($item)=='1' and !is_numeric(key($item))) $this->datas[$section][key($item)]=$item[key($item)];
-				else $this->datas[$section] = array_merge($this->datas[$section],$item);
-				}
-			else $this->datas[$section] = $item;	
+				else if(!is_numeric(key($item))) $this->datas[$section][key($item)]=$item[key($item)];
+			}
+			else	$this->datas[$section] = array_merge($this->datas[$section],$item);
+		}
+		else $this->datas[$section] = $item;	
 	}
 	$this->save();
 }
+
 
  
  
