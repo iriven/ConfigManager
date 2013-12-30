@@ -40,25 +40,58 @@ public function get($section=null, $item=null)
     return $this->datas[$section][$item];
 }
  
-public function set($item=array(),$section=null)
+public function set($section=null,$item,$value=null)
 {
-    if($item) $item=array_change_key_case($item, CASE_LOWER);
-    if($section) $section = trim(strtolower($section));
-    if(!is_array($item)):
-    if(!$section and !array_key_exists($item,$this->datas))$this->datas[$item] = array();
-    else
-    if(!array_key_exists($item,$this->datas[$section])) $this->datas[$section][$item] = array();
-    endif;
-foreach($item as $k=>$v):
-    if(!$section)$section = 'root';
-     if (is_array($v)):
-      $this->datas[$section][$k] = $this>set($v,$this->datas[$section][$k]);
-    else:
-      $this->datas[$section][$k] = $v;
-    endif;
-  endforeach;
-    $this->save();
+	$numarg = func_num_args();
+	$arg=func_get_args();
+	switch($numarg)
+	{
+		case 1:
+		if(!is_array($arg[0])) return false;
+		$item=array_change_key_case($arg[0], CASE_LOWER);
+		$section=null;
+		$value=null;
+		break;
+		case 2:
+		if(is_array($arg[0])) return false;
+		 $_arg = strtolower(trim($arg[0]));
+		if(is_array($arg[1]))
+		{
+			$section=$_arg; $item =array_change_key_case($arg[1], CASE_LOWER);$value=null;
+		}
+		else
+		{$item = $_arg;$value=$arg[1];$section=null;}
+		
+		break;		
+		default:
+		break;
+	}
+	$section = $section? trim(strtolower($section)) : 'root';	
+	if(!is_array($item))
+	{
+		$item=trim(strtolower($item));
+		if(!isset($this->datas[$section][$item]) or !is_array($this->datas[$section][$item])):
+		 		$this->datas[$section][$item]=$value;
+		 else:
+		 		if(!is_array($value)) $value = array($value);
+			 	$this->datas[$section][$item] = array_merge($this->datas[$section][$item],$value);
+		 endif;	
+	}
+	else
+	{
+		
+			$sectionsize=count($this->datas[$section]);		
+			if($sectionsize){
+				if(sizeof($item)=='1' and array_key_exists(key($item),$this->datas[$section]))
+				$this->datas[$section][key($item)] = array_merge($this->datas[$section][key($item)],$item[key($item)]);
+				elseif(sizeof($item)=='1' and !is_numeric(key($item))) $this->datas[$section][key($item)]=$item[key($item)];
+				else $this->datas[$section] = array_merge($this->datas[$section],$item);
+				}
+			else $this->datas[$section] = $item;	
+	}
+	$this->save();
 }
+
  
  
     public function del($section, $item=null){
