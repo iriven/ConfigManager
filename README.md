@@ -10,4 +10,4 @@ IrivenConfigManager
 
 ## Main Features
 * **Intuitif** - Detection automatique du driver à utiliser, sur la base de l'extension du fichier passé en parametre
-* **facile** - Extremely easy to learn and use, friendly construction.
+* **Facile** - Utilisation et Prise en main extrêmement simple et rapide.
