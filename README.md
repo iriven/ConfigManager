@@ -17,6 +17,6 @@ IrivenConfigManager
 
 ## Utilisation
 * **cas 1** - Le $filename est connu et se trouve dans le dossier de stockage des fichiers de configuration ($configDir)
-+ $config= new IrivenConfigManager($filename,$configDir);
++ **$config= new IrivenConfigManager($filename,$configDir)**;
 * **cas 2** - seul le chemin complet du fichier de configuration ($filepath) est fournit
- + $config= new IrivenConfigManager($filepath);
+ + **$config= new IrivenConfigManager($filepath)**;
