@@ -20,3 +20,6 @@ IrivenConfigManager
 * **set** - $config->set($key,$value);
 * **get** - $config->get($key);
 * **del** - $config->del($key);
+
+## Notes
+Le type de fichier de comfiguration (php, json,ini) est automatiquement selectionné lors de l'initialisation de la classe en fonction de l'extension du fichier cible. si l'extension fu chier de configuration n'est pas renseigné, le driver par defaut sera positionné à **php**.
