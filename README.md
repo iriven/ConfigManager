@@ -1,4 +1,4 @@
-initool
+IrivenConfigManager
 =======
 
 classe php de gestion des fichiers de configuration
