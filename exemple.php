@@ -14,7 +14,7 @@ $licence = array(
   'salt'=>pack('H*', md5(time())),
   'lastvalidation' => 98745612 // default: time(), execution du script pour la 1ere fois
 );
-$ini = new initool('./licence.ini');
+$ini = new IrivenConfigManager('./licence.ini');
 $ini->set('licence',$licence); //with section
 $test = array('test1'=>'my tester1','test2'=>'my tester2','test3'=>'my tester3');			
 $ini->set($test);	//no section	
