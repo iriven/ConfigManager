@@ -10,13 +10,13 @@ IrivenConfigManager
 * **Facile** - Utilisation et Prise en main extrêmement simple et rapide.
 * **Puissant** - Prise en charge de tout type de tableau (simple, multidimentionnel).
 
-## Les Methodes Publics
-* **set** - $config->set($key,$value);
-* **get** - $config->get($key);
-* **del** - $config->del($key);
-
-## Utilisation
+## Initialisation de la classe
 * **cas 1** - Le $filename est connu et se trouve dans le dossier de stockage des fichiers de configuration ($configDir)
  **$config= new IrivenConfigManager($filename,$configDir)**;
 * **cas 2** - seul le chemin complet du fichier de configuration ($filepath) est fournit
  + **$config= new IrivenConfigManager($filepath)**;
+
+## Les Methodes Publics
+* **set** - $config->set($key,$value);
+* **get** - $config->get($key);
+* **del** - $config->del($key);
