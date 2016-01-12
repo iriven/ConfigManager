@@ -1,7 +1,8 @@
 IrivenConfigManager
 =======
 
->classe php de gestion des fichiers de configuration
+>IrivenConfigManager est un composant / package stand alone, developpé pour manipuler facilement 
+les fichiers de configurations de  toute application PHP.
 
 ## Les Caractéristiques
 * **Leger** - 12KB environ et un seul fichier
