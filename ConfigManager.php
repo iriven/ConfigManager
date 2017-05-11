@@ -1,11 +1,12 @@
 <?php
+namespace Iriven;
 /**
  * Created by PhpStorm.
  * User: IRIVEN FRANCE
  * Date: 21/11/2015
  * Time: 10:44
  */
-class IrivenConfigManager
+class ConfigManager
 {
     /**
     * Chemin complet du fichier de configuration
