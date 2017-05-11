@@ -13,9 +13,9 @@ les fichiers de configurations de  toute application PHP.
 
 ## Initialisation de la classe
 * **cas 1** - Le $filename est connu et se trouve dans le dossier de stockage des fichiers de configuration ($configDir)
- **$config= new IrivenConfigManager($filename,$configDir)**;
+ **$config= new Iriven\ConfigManager($filename,$configDir)**;
 * **cas 2** - seul le chemin complet du fichier de configuration ($filepath) est fournit
- + **$config= new IrivenConfigManager($filepath)**;
+ + **$config= new Iriven\ConfigManager($filepath)**;
 
 ## Les Methodes Publics
 * **set** - $config->set($key,$value);
