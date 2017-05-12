@@ -65,9 +65,7 @@ class ConfigManager
                 $key = $item;
                 $item = $section;
                 $section = $this->defaultSection;
-                if(!isset($this->Config[$section][$item]) OR
-                    !is_array($this->Config[$section][$item]) OR
-                    !isset($this->Config[$section][$item][$key]))
+                if(!isset($this->Config[$section][$item][$key]))
                     return false;
                 return $this->Config[$section][$item][$key];
             }
