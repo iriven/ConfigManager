@@ -107,26 +107,36 @@ class ConfigManager
         return $this->driver;
     }
 
-    /**
+ /**
      * @param null $section
      * @param null $item
-     * @return array|bool
+     * @return array|bool|mixed
      */
     public function get($section=null, $item=null)
     {
         if($item) $item = trim(strtolower($item));
         if($section) $section = trim(strtolower($section));
         if(!count($this->Config)) return false;
-        if(func_num_args() == 0) return $this->Config;
-        if((!$item and $section) or ($item and !$section))
+        if(!$section or !strlen($section)) return $this->Config;
+        if($section AND $item)
         {
-            if(!$item) $item = $section;
-            if(!isset($this->Config[$item]))
+            if(!isset($this->Config[$section]))
             {
-                if(isset($this->Config['root'][$item])) return $this->Config['root'][$item];
-                return false;
+                $key = $item;
+                $item = $section;
+                $section = $this->defaultSection;
+                if(!isset($this->Config[$section][$item]) OR
+                    !is_array($this->Config[$section][$item]) OR
+                    !isset($this->Config[$section][$item][$key]))
+                    return false;
+                return $this->Config[$section][$item][$key];
             }
-            return $this->Config[$item];
+        }
+        elseif(!$item or !strlen($item))
+        {
+            $item = $section;
+            if(isset($this->Config[$item])) return $this->Config[$item];
+            $section = $this->defaultSection;
         }
         if(!isset($this->Config[$section][$item])) return false;
         return $this->Config[$section][$item];
