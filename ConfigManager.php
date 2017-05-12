@@ -1,5 +1,6 @@
 <?php
 namespace Iriven;
+use Exception;
 /**
  * Created by PhpStorm.
  * User: IRIVEN FRANCE
@@ -11,29 +12,24 @@ class ConfigManager
     /**
     * Chemin complet du fichier de configuration
     */
-    private $fileFullPath;
+    private $targetFile;
+    private $Options = [];
     /**
     * tableau multidimensionnel contenant les donnée de configuration, initialement
     * chargées depuis le fichier
     */
-    private $Config = array();
+    private $Config = [];
     /**
     * processeurs de fichier pris en charge par l'application
     */
-    private $availableDrivers = array('JSON', 'PHP','INI');
-    /**
-    * processeur de fichier actif
-    */
-    private $driver = null;
+    private $availableDrivers = array('JSON', 'PHP','INI','YML');
+
     private $defaultSection = 'runtime';
-    /**
-    * Dossier de stockage des fichiers de configuration
-    */
-    private $repository = '';// modifier ici selon la config de votre site
 
     /**
      * @param $filename
      * @param null $location
+     * @throws \Exception
      */
     public function __construct( $filename, $location=null )
     {
@@ -42,7 +38,8 @@ class ConfigManager
         {
             if($numargs > 2)
                 throw new Exception('SETUP ERROR: configuration manager can accept only up to 2 parameters,'.$numargs.' given!');
-            $this->loadDriver($filename,$location);
+            $this->configureOptions($filename,$location);
+            $this->parseConfiguration($this->Options);
             return $this;
         }
         catch(Exception $a)
@@ -50,63 +47,6 @@ class ConfigManager
             die($a->getMessage());
         }
     }
-
-    /**
-     * @param $file
-     * @param null $location
-     * @return bool|null|string
-     * @throws Exception
-     */
-    private function loadDriver($file,$location=null)
-    {
-        if(!($numargs = func_num_args()))
-            return false;
-        if(!is_string($file) or ($location and !is_string($location)))
-            return false;
-        $this->driver or $this->driver = 'PHP';
-        try
-        {
-			 try
-			{
-				if($location)
-                $this->repository=rtrim($this->normalize($location),DIRECTORY_SEPARATOR);
-				$filename = basename($file).'.'.strtolower($this->driver);
-				if(strpos(basename($file),'.')!==false)
-				{
-					// PHP >5.2
-					$this->driver = strtoupper(pathinfo($file, PATHINFO_EXTENSION))?: strtoupper(end(explode('.', $file)));
-					$filename = basename(substr($file,0,strrpos($file,'.'))).'.'.strtolower($this->driver);
-				}
-				if(!in_array($this->driver,$this->availableDrivers, true))
-					throw new Exception('SETUP ERROR: the configuration driver "'.$this->driver.'" is not supported!');
-				$this->fileFullPath = $this->normalize($this->repository.DIRECTORY_SEPARATOR.$filename);
-				if(!file_exists($this->fileFullPath))
-					file_put_contents($this->fileFullPath,'',LOCK_EX);
-				switch($this->driver)
-				{
-					case 'JSON':
-						$this->Config = unserialize(json_decode(file_get_contents($this->fileFullPath), true));
-						break;
-					case 'INI':
-						$this->Config = parse_ini_file($this->fileFullPath, true);
-						break;
-					default:
-						if(!$this->Config = include $this->fileFullPath) $this->Config = array();
-						break;
-				}
-			}
-			catch(Exception $a)
-			{
-				die( $a->getMessage());
-			}
-        }
-        catch(InvalidArgumentException $b)
-        {
-            die( $b->getMessage());
-        }
-        return $this->driver;
-    }
-
  /**
      * @param null $section
      * @param null $item
@@ -201,7 +141,7 @@ class ConfigManager
         ob_end_clean();
         return $re;
     }
-    /**
+/**
      * @param $section
      * @param null $item
      * @return bool
@@ -212,78 +152,75 @@ class ConfigManager
         if($item and strlen($item))
         {
             $item = trim(strtolower($item));
-            if(!isset($this->Config[$section])) return false;
-            $sectionsize=count($this->Config[$section]);
-            if($sectionsize > 1){if(isset($this->Config[$section][$item])) unset($this->Config[$section][$item]);}
-            else{if(isset($this->Config[$section][$item])) unset($this->Config[$section]);}
+            if(!isset($this->Config[$section]))
+            {
+                $key = $item;
+                $item = $section;
+                $section = $this->defaultSection;
+                if(isset($this->Config[$section][$item][$key]))
+                {
+                    $itemSize=count($this->Config[$section][$item]);
+                    if($itemSize>1) unset($this->Config[$section][$item][$key]);
+                    else unset($this->Config[$section]);
+                }
+            }
+            else
+            {
+                $sectionSize=count($this->Config[$section]);
+                if(isset($this->Config[$section][$item]))
+                {
+                    if($sectionSize>1) unset($this->Config[$section][$item]);
+                    else unset($this->Config[$section]);
+                }
+            } 
         }
         else
         {
             $item = $section;
             if(!isset($this->Config[$item]))
             {
-                $rootsize = count($this->Config['root']);
-                if($rootsize>1){if(isset($this->Config['root'][$item])) unset($this->Config['root'][$item]);}
-                else{if(isset($this->Config['root'][$item])) unset($this->Config['root']);}
+                $section = $this->defaultSection;
+                $defaultSectionSize = count($this->Config[$section]);
+                if(isset($this->Config[$section][$item]))
+                {
+                    if($defaultSectionSize>1) unset($this->Config[$section][$item]);
+                    else unset($this->Config[$section]);
+                }
             }
             else unset($this->Config[$item]);
         }
         return $this->Save();
     }
-
     /**
-     * @return bool
+     * @param $file
+     * @param null $location
+     * @return array|bool
      */
-    private function Save()
-    {
-        if( !is_writeable( $this->fileFullPath ) ) @chmod($this->fileFullPath,0775);
-        $content = null;
-        switch($this->driver)
-        {
-            case 'JSON':
-                $content .= json_encode(serialize($this->Config));
-                break;
-            case 'INI':
-                $buildSectionDatas = function ($section,$datas) use (&$buildSectionDatas)
-                {
-                    $Output= '';
-                    is_array($datas) or $datas = array($datas);
-                    foreach($datas as $groupKey => $groupValue)
-                    {
-                        if(is_array($groupValue))
-                            $Output.= $buildSectionDatas($section[$groupKey],$groupValue);
-                        else{ $Output .= $section[$groupKey].'='.(is_numeric($groupValue) ? $groupValue : '"'.$groupValue.'"').PHP_EOL;}
-                    }
-                    return $Output;
-                };
-                $content .= '; @file generated by: "'.get_class($this).'" Class'.PHP_EOL;
-                $content .= '; @Last Update: '.date('Y-m-d H:i:s').PHP_EOL;
-                $content .= PHP_EOL;
-                foreach($this->Config as $section => $value)
-                {
-                    if(is_array($value)) {
-                        $content .= '[' . $section . ']' . PHP_EOL;
-                        $content .= $buildSectionDatas($section,$value). PHP_EOL;
-                        $content .= PHP_EOL;
-                    }
-                    else{$content .= $section.'='.(is_numeric($value) ? $value : '"'.$value.'"').PHP_EOL;}
-                }
-                break;
-            default:
-                $content .= '<?php'.PHP_EOL;
-                $content .= '/**'.PHP_EOL;
-                $content .= '@file generated by: "'.get_class($this).'" Class'.PHP_EOL;
-                $content .= ' @Last Update: '.date('Y-m-d H:i:s').PHP_EOL;
-                $content .= '*/'.PHP_EOL;
-                $content .= 'return ';
-                $content .= var_export($this->Config, true) . ';';
-                break;
+    private function configureOptions($file,$location=null){
+        if(!is_string($file) or ($location and !is_string($location)))
+            throw new InvalidArgumentException('SETUP ERROR: configuration manager can accept string only parameters');
+        $default=[
+            'driver' => 'PHP',
+            'filename' => null,
+            'directory' => null,
+        ];
+        $Options = [];
+        if($location)
+            $Options['directory']=rtrim($this->normalize($location),DIRECTORY_SEPARATOR);
+        else{
+            if(basename($file)!==$file)
+                $Options['directory']= rtrim($this->normalize(pathinfo($file,PATHINFO_DIRNAME)),DIRECTORY_SEPARATOR);
         }
-        file_put_contents($this->fileFullPath, $content, LOCK_EX);
-        @chmod($this->fileFullPath,0644);
-        return true;
+        $Options['filename'] = basename($file);
+        if(strpos($Options['filename'],'.')!==false)
+            $Options['driver'] = strtoupper(pathinfo($Options['filename'], PATHINFO_EXTENSION));
+        else
+            $Options['filename']= $Options['filename'].'.'.strtolower($default['driver']);
+	     if(!in_array($Options['driver'],$this->$availableDrivers))
+            throw new \Exception('ERROR: driver "'.$Options['driver'].'" not supported');
+	    $this->Options = array_merge($default,$Options);
+        return $this->Options;
     }
-
     /**
      * @param $path
      * @param null $relativeTo
@@ -312,6 +249,80 @@ class ConfigManager
             }
         }
         return $path;
+    }
+	  /**
+     * @param array $options
+     * @return mixed
+     */
+    private function parseConfiguration($options=[])
+    {
+
+        try
+        {  $this->targetFile = $this->normalize($options['directory'].DIRECTORY_SEPARATOR.$options['filename']);
+            if(!file_exists($this->targetFile))
+                file_put_contents($this->targetFile,'',LOCK_EX);
+            switch($this->Options['driver'])
+            {
+                case 'JSON':
+                    $this->Config = unserialize(json_decode(file_get_contents($this->targetFile), true));
+                    break;
+                case 'INI':
+                    $this->Config = parse_ini_file($this->targetFile, true);
+                    break;
+                case 'YML':
+                    $ndocs=0;
+                    $this->Config = yaml_parse_file($this->targetFile,0,$ndocs);
+                    break;
+                default:
+                    if(!$this->Config = include $this->targetFile) $this->Config = [];
+                    break;
+            }
+        }
+        catch(\InvalidArgumentException $b)
+        {
+            die( $b->getMessage());
+        }
+        return $this->Config;
+    }
+/**
+     * @return bool
+     */
+     private function Save()
+    {
+        if( !is_writeable( $this->targetFile ) ) @chmod($this->targetFile,0775);
+        $content = null;
+        switch($this->Options['driver'])
+        {
+            case 'JSON':
+                $content .= json_encode(serialize($this->Config));
+                break;
+            case 'INI':
+                $content .= '; @file generator: Iriven France Php "'.get_class($this).'" Class'.PHP_EOL;
+                $content .= '; @Last Update: '.date('Y-m-d H:i:s').PHP_EOL;
+                $content .= PHP_EOL;
+                foreach($this->Config as $section => $array)
+                {
+                    is_array($array) or $array = array($array);
+                    $content .= '[' . $section . ']'.PHP_EOL;
+                    foreach( $array as $key => $value )
+                        $content .= PHP_TAB.$key.' = '.$value.PHP_EOL;
+                    $content .= PHP_EOL;
+                }
+                break;
+            case 'YML':
+                $content .= yaml_emit ($this->Config, YAML_UTF8_ENCODING , YAML_LN_BREAK );
+                break;
+            default:
+                $content .= '<?php'.PHP_EOL;
+                $content .= 'return ';
+                $content .= var_export($this->Config, true) . ';';
+                $content = preg_replace('/array\s+\(/', '[', $content);
+                $content = preg_replace('/,(\s+)\)/', '$1]', $content);
+                break;
+        }
+        file_put_contents($this->targetFile, $content, LOCK_EX);
+        @chmod($this->targetFile,0644);
+        return true;
     }
     /**
      * fin de la classe
