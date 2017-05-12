@@ -25,7 +25,7 @@ class ConfigManager
     * processeur de fichier actif
     */
     private $driver = null;
-
+    private $defaultSection = 'runtime';
     /**
     * Dossier de stockage des fichiers de configuration
     */
@@ -142,14 +142,15 @@ class ConfigManager
         return $this->Config[$section][$item];
     }
 
-    /**
+ /**
      * @param null $section
      * @param $item
      * @param null $value
      * @return bool
      */
-    public function set($section=null,$item,$value=null)
-    { ob_start();
+    public function set($section,$item=null,$value=null)
+    { 
+        ob_start();
         $numarg = func_num_args();
         $arguments=func_get_args();
         switch($numarg)
@@ -166,7 +167,7 @@ class ConfigManager
             default:
                 break;
         }
-        $section = $section? trim(strtolower($section)) : 'root';
+        $section = $section? trim(strtolower($section)) : $this->defaultSection;
         if(!is_array($item))
         {
             if(!$value) return false;
@@ -200,7 +201,6 @@ class ConfigManager
         ob_end_clean();
         return $re;
     }
-
     /**
      * @param $section
      * @param null $item
