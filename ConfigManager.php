@@ -197,11 +197,11 @@ class ConfigManager
      */
     private function configureOptions($file,$location=null){
         if(!is_string($file) or ($location and !is_string($location)))
-            throw new InvalidArgumentException('SETUP ERROR: configuration manager can accept string only parameters');
+            throw new Exception('SETUP ERROR: configuration manager can accept string only parameters');
         $default=[
             'driver' => 'PHP',
             'filename' => null,
-            'directory' => null,
+            'directory' => __DIR__,
         ];
         $Options = [];
         if($location)
@@ -216,7 +216,7 @@ class ConfigManager
         else
             $Options['filename']= $Options['filename'].'.'.strtolower($default['driver']);
 	     if(!in_array($Options['driver'],$this->$availableDrivers))
-            throw new \Exception('ERROR: driver "'.$Options['driver'].'" not supported');
+            throw new Exception('ERROR: driver "'.$Options['driver'].'" not supported');
 	    $this->Options = array_merge($default,$Options);
         return $this->Options;
     }
@@ -277,7 +277,7 @@ class ConfigManager
                     break;
             }
         }
-        catch(\InvalidArgumentException $b)
+        catch(Exception $b)
         {
             die( $b->getMessage());
         }
