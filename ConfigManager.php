@@ -97,7 +97,8 @@ class ConfigManager
         {
             case 1:
                 if(!is_array($arguments[0])) return false;
-                $item=array_change_key_case($arguments[0], CASE_LOWER); $section=null; $value=null;	break;
+                $item=array_change_key_case($arguments[0], CASE_LOWER); $section=null; $value=null;	
+		break;
             case 2:
                 if(is_array($arguments[0])) return false;
                 $_arg = strtolower(trim($arguments[0]));
