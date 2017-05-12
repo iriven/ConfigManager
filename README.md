@@ -6,7 +6,7 @@ les fichiers de configurations de  toute application PHP.
 
 ## Les Caractéristiques
 * **Leger** - 12KB environ et un seul fichier
-* **Multi-driver** - Prise en charge des fichiers de configuration de type **Php-Array** (.php), **Json** (.json) et **INI** (.ini)
+* **Multi-driver** - Prise en charge des fichiers de configuration de type **Php-Array** (.php), **Json** (.json), **INI** (.ini)et **YAML** (.yml)
 * **Intuitif** - Detection automatique du driver à utiliser, sur la base de l'extension du fichier passé en parametre
 * **Facile** - Utilisation et Prise en main extrêmement simple et rapide.
 * **Puissant** - Prise en charge de tout type de tableau (simple, multidimentionnel).
