@@ -24,3 +24,9 @@ les fichiers de configurations de  toute application PHP.
 
 ## Notes
 Le type de fichier de comfiguration (php, json,ini) est automatiquement selectionné lors de l'initialisation de la classe en fonction de l'extension du fichier cible. si l'extension fu chier de configuration n'est pas renseigné, le driver par defaut sera positionné à **php**.
+
+## Donation
+
+If this project help you reduce time to develop, you can give me a cup of coffee :)
+
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XDCFPNTKUC4TU)
