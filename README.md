@@ -1,6 +1,7 @@
 Iriven PHP ConfigManager
 =======
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XDCFPNTKUC4TU)
+[![Build Status](https://travis-ci.org/iriven/ConfigManager.svg?branch=master)](https://travis-ci.org/iriven/ConfigManager)
 
 >Iriven Php ConfigManager est un composant / package stand alone, developpé pour manipuler facilement 
 les fichiers de configurations de  toute application PHP.
