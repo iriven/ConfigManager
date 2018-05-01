@@ -2,7 +2,5 @@ language: php
 php:
   - "stable"
 env:
-  - NODE_ENV: "Developpement"
-  - NODE_ENV: 
-    - "Production"
-    - SESSION_SECRET: "iriven France"
+  - NODE_ENV="Developpement"
+  - NODE_ENV="Production";SESSION_SECRET="iriven France"
