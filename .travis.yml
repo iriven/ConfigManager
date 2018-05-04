@@ -1,3 +1,4 @@
 language: php
 env:
   - NODE_ENV="Production"
+script: ./build.sh
