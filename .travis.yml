@@ -1,12 +1,9 @@
 language: php
+php:
+  - 7.0
+  - 7.1
+  - 7.2
+  - 7.3
 env:
   - NODE_ENV="Production"
-deploy:
-  provider: releases
-  api_key: "ztiubraYcjxPivysgqM-LA"
-  file_glob: true
-  file: ./**/*
-  skip_cleanup: true
-  on:
-    tags: true
 script: build.sh
