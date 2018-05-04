@@ -6,7 +6,7 @@ deploy:
   provider: releases
   api_key: "ztiubraYcjxPivysgqM-LA"
   file_glob: true
-  file:./**/*
+  file: ./**/*
   skip_cleanup: true
   on:
     tags: true
