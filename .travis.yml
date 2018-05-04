@@ -1,5 +1,12 @@
 language: php
-php: "stable"
+php: "7.3"
 env:
-  - NODE_ENV="Developpement"
-  - NODE_ENV="Production";SESSION_SECRET="iriven France"
+  - NODE_ENV="Production"
+deploy:
+  provider: releases
+  api_key: ""
+  file_glob: true
+  file:./**/*
+  skip_cleanup: true
+  on:
+    tags: true
