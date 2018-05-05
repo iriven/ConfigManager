@@ -3,5 +3,5 @@ php:
   - 5.6
   - 7.0
 env:
-  - prod
+  - NODE_ENV="prod"
 script: phpunit --configuration phpunit.xml --coverage-text
