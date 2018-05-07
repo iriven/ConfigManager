@@ -1,0 +1,39 @@
+{
+    "name": "iriven/Config-manager",
+    "type": "library",
+    "description": "Array map with keys",
+    "keywords": [
+        "php",
+        "php7",
+        "setup",
+        "configuration",
+        "configuration Manager"
+    ],
+    "homepage": "https://github.com/iriven/ConfigManage",
+    "license": "MIT",
+    "authors": [
+    {
+      "name": "Alfred TCHONDJO",
+      "email": "contact@iriven.com",
+      "homepage": "https://github.com/iriven?tab=repositories",
+      "role": "Developer"
+    }
+    ],
+    "autoload": {
+        "files": [
+            "ConfigManager.php"
+        ]
+    },
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.4.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "iriven\\": "/"
+        }
+    },
+    "scripts": {}
+}
