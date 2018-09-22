@@ -10,7 +10,7 @@ php:
   - hhvm
   
 before_script:
-  - chmod +x ./build.sh
+  - git update-index --add --chmod=+x build.sh
   
 script:
   - ./build.sh
