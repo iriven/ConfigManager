@@ -10,14 +10,12 @@ php:
   - hhvm
 
 before_install:
+  - cd ../..
+  - chmod +x build.sh
   - travis_retry composer self-update
 
 install:
   - composer install
-
-before_script:
-  - cd ../..
-  - chmod +x ./build.sh
   
 script:
   - ./build.sh
