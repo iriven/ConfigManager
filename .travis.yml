@@ -10,7 +10,7 @@ php:
   - hhvm
   
 script:
-  - ./vendor/bin/phpunit
+  - echo 'Iriven PHP ConfigManager Library'
   
 before_install:
   - travis_retry composer self-update
