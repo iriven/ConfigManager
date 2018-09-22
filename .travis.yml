@@ -11,13 +11,10 @@ php:
   - hhvm
 
 script:
-  - ./build.sh
+  - sh ./build.sh
 
 before_install:
   - travis_retry composer self-update
-  - git update-index --add --chmod=+x build.sh
-  - git commit -m 'Make build.sh executable'
-  - git push
 
 install:
   - composer install
