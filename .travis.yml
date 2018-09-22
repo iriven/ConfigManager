@@ -15,7 +15,6 @@ script:
 
 before_install:
   - travis_retry composer self-update
-  - chmod +x ./build.sh
   - git update-index --add --chmod=+x build.sh
   - git commit -m 'Make build.sh executable'
   - git push
