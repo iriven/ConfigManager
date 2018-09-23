@@ -268,8 +268,6 @@ class ConfigManager
             switch($this->Options['driver'])
             {
                 case 'JSON':
-                    if(!function_exists('json_decode')) 
-                        throw new Exception('Error: The PHP-Json extension is missing');
                     $this->Config = unserialize(json_decode(file_get_contents($this->targetFile), true));
                     break;
                 case 'INI':
@@ -277,8 +275,6 @@ class ConfigManager
                     break;
                 case 'YML':
                     $ndocs=0;
-                    if(!function_exists('yaml_parse_file'))
-                        throw new Exception('Error: The PHP-Yaml extension is missing');
                     $this->Config = yaml_parse_file($this->targetFile,0,$ndocs);
                     break;
                 default:
@@ -299,17 +295,10 @@ class ConfigManager
     private function Save()
     {
         try {
-            if( !is_writeable( $this->targetFile ) )
-            {
-                if(@chmod($this->targetFile,0775))
-                    throw new Exception('Cant write to file: '.$this->targetFile);
-            }
             $content = null;
             switch($this->Options['driver'])
             {
                 case 'JSON':
-                    if(!function_exists('json_encode'))
-                        throw new Exception('Error: The PHP-Json extension is missing');
                     $content .= json_encode(serialize($this->Config));
                     break;
                 case 'INI':
@@ -326,8 +315,6 @@ class ConfigManager
                     }
                     break;
                 case 'YML':
-                    if(!function_exists('yaml_emit'))
-                        throw new Exception('Error: The PHP-Yaml extension is missing');
                     $content .= yaml_emit ($this->Config, YAML_UTF8_ENCODING , YAML_LN_BREAK );
                     break;
                 default:
@@ -339,8 +326,6 @@ class ConfigManager
                     break;
             }
             file_put_contents($this->targetFile, $content, LOCK_EX);
-            if(@chmod($this->targetFile,0644))
-                throw new Exception('Cant write to file: '.$this->targetFile);
         }
         catch (Exception $e)
         {  trigger_error($e->getMessage(),E_USER_ERROR);}
