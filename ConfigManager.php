@@ -50,8 +50,8 @@ class ConfigManager
     }
 
     /**
-     * @param null $section
-     * @param null $item
+     * @param $section
+     * @param $item
      * @return array|bool|mixed
      */
     public function get($section=null, $item=null)
