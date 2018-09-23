@@ -28,7 +28,7 @@ class ConfigManager
 
     /**
      * @param $filename
-     * @param null $location
+     * @param $location
      * @throws \Exception
      */
     public function __construct( $filename, $location=null )
@@ -44,12 +44,12 @@ class ConfigManager
         }
         catch(Exception $a)
         {
-            die($a->getMessage());
+            trigger_error($a->getMessage(),E_USER_ERROR);
         }
     }
  /**
-     * @param null $section
-     * @param null $item
+     * @param $section
+     * @param $item
      * @return array|bool|mixed
      */
     public function get($section=null, $item=null)
@@ -81,9 +81,9 @@ class ConfigManager
     }
 
  /**
-     * @param null $section
+     * @param $section
      * @param $item
-     * @param null $value
+     * @param $value
      * @return bool
      */
     public function set($section,$item=null,$value=null)
@@ -142,7 +142,7 @@ class ConfigManager
     }
 /**
      * @param $section
-     * @param null $item
+     * @param $item
      * @return bool
      */
     public function del($section, $item=null)
@@ -192,7 +192,7 @@ class ConfigManager
     }
     /**
      * @param $file
-     * @param null $location
+     * @param $location
      * @return array|bool
      */
     private function configureOptions($file,$location=null){
@@ -222,7 +222,7 @@ class ConfigManager
     }
     /**
      * @param $path
-     * @param null $relativeTo
+     * @param $relativeTo
      * @return string
      */
     private function normalize($path, $relativeTo = null) {
