@@ -21,13 +21,9 @@ $ini->set($test);	//no section
 $ini->set('repo','centos');	//no section	
 $ini->set('linux','repo','fedora');	//with section
 
-echo $ini->get('test1');
-
-echo $ini->get('test2');
-
-echo $ini->get('test3');
-
-
+print_r($ini->get('test1'));
+print_r($ini->get('test2'));
+print_r($ini->get('test3'));
 
 echo '<pre>';
 print_r($ini->get('licence'));
