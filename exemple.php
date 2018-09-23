@@ -21,11 +21,11 @@ $ini->set($test);	//no section
 $ini->set('repo','centos');	//no section	
 $ini->set('linux','repo','fedora');	//with section
 
-echo $ini->get('test1').PHP_EOL;
+echo $ini->get('test1');
 
-echo $ini->get('test2').PHP_EOL;
+echo $ini->get('test2');
 
-echo $ini->get('test3').PHP_EOL;
+echo $ini->get('test3');
 
 
 
