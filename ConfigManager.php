@@ -1,36 +1,36 @@
 <?php
 namespace Iriven;
-use Exception;
+
 /**
  * Created by PhpStorm.
  * User: IRIVEN FRANCE
  * Date: 21/11/2015
  * Time: 10:44
  */
+use Exception;
+
 class ConfigManager
 {
-	const PHP_TAB = "\t";
     /**
-    * Chemin complet du fichier de configuration
-    */
+     * Chemin complet du fichier de configuration
+     */
     private $targetFile;
     private $Options = [];
     /**
-    * tableau multidimensionnel contenant les donnée de configuration, initialement
-    * chargées depuis le fichier
-    */
+     * tableau multidimensionnel contenant les donnée de configuration, initialement
+     * chargées depuis le fichier
+     */
     private $Config = [];
     /**
-    * processeurs de fichier pris en charge par l'application
-    */
+     * processeurs de fichier pris en charge par l'application
+     */
     private $availableDrivers = array('JSON', 'PHP','INI','YML');
-
     private $defaultSection = 'runtime';
 
     /**
+     * ConfigManager constructor.
      * @param $filename
      * @param $location
-     * @throws \Exception
      */
     public function __construct( $filename, $location=null )
     {
@@ -41,14 +41,15 @@ class ConfigManager
                 throw new Exception('SETUP ERROR: configuration manager can accept only up to 2 parameters,'.$numargs.' given!');
             $this->configureOptions($filename,$location);
             $this->parseConfiguration($this->Options);
-            return $this;
         }
         catch(Exception $a)
         {
             trigger_error($a->getMessage(),E_USER_ERROR);
         }
+        return $this;
     }
- /**
+
+    /**
      * @param $section
      * @param $item
      * @return array|bool|mixed
@@ -80,15 +81,14 @@ class ConfigManager
         if(!isset($this->Config[$section][$item])) return false;
         return $this->Config[$section][$item];
     }
-
- /**
+    /**
      * @param $section
      * @param $item
      * @param $value
      * @return bool
      */
     public function set($section,$item=null,$value=null)
-    { 
+    {
         ob_start();
         $numarg = func_num_args();
         $arguments=func_get_args();
@@ -96,8 +96,8 @@ class ConfigManager
         {
             case 1:
                 if(!is_array($arguments[0])) return false;
-                $item=array_change_key_case($arguments[0], CASE_LOWER); $section=null; $value=null;	
-		break;
+                $item=array_change_key_case($arguments[0], CASE_LOWER); $section=null; $value=null;
+                break;
             case 2:
                 if(is_array($arguments[0])) return false;
                 $_arg = strtolower(trim($arguments[0]));
@@ -141,7 +141,7 @@ class ConfigManager
         ob_end_clean();
         return $re;
     }
-/**
+    /**
      * @param $section
      * @param $item
      * @return bool
@@ -172,7 +172,7 @@ class ConfigManager
                     if($sectionSize>1) unset($this->Config[$section][$item]);
                     else unset($this->Config[$section]);
                 }
-            } 
+            }
         }
         else
         {
@@ -191,10 +191,12 @@ class ConfigManager
         }
         return $this->Save();
     }
+
     /**
      * @param $file
      * @param $location
-     * @return array|bool
+     * @return array
+     * @throws Exception
      */
     private function configureOptions($file,$location=null){
         if(!is_string($file) or ($location and !is_string($location)))
@@ -216,15 +218,16 @@ class ConfigManager
             $Options['driver'] = strtoupper(pathinfo($Options['filename'], PATHINFO_EXTENSION));
         else
             $Options['filename']= $Options['filename'].'.'.strtolower($default['driver']);
-	     if(!in_array($Options['driver'],$this->availableDrivers))
+        if(!in_array($Options['driver'],$this->availableDrivers))
             throw new Exception('ERROR: driver "'.$Options['driver'].'" not supported');
-	    $this->Options = array_merge($default,$Options);
+        $this->Options = array_merge($default,$Options);
         return $this->Options;
     }
+
     /**
      * @param $path
      * @param $relativeTo
-     * @return string
+     * @return bool|string
      */
     private function normalize($path, $relativeTo = null) {
         $path = rtrim(preg_replace('#[/\\\\]+#', DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
@@ -250,13 +253,14 @@ class ConfigManager
         }
         return $path;
     }
-	  /**
+
+    /**
      * @param array $options
-     * @return mixed
+     * @return array|bool|mixed
      */
+    
     private function parseConfiguration($options=[])
     {
-
         try
         {  $this->targetFile = $this->normalize($options['directory'].DIRECTORY_SEPARATOR.$options['filename']);
             if(!file_exists($this->targetFile))
@@ -284,48 +288,50 @@ class ConfigManager
         }
         return $this->Config;
     }
-/**
+
+    /**
      * @return bool
      */
-     private function Save()
+    private function Save()
     {
-        if( !is_writeable( $this->targetFile ) ) @chmod($this->targetFile,0775);
-        $content = null;
-        switch($this->Options['driver'])
-        {
-            case 'JSON':
-                $content .= json_encode(serialize($this->Config));
-                break;
-            case 'INI':
-                $content .= '; @file generator: Iriven France Php "'.get_class($this).'" Class'.PHP_EOL;
-                $content .= '; @Last Update: '.date('Y-m-d H:i:s').PHP_EOL;
-                $content .= PHP_EOL;
-                foreach($this->Config as $section => $array)
-                {
-                    is_array($array) or $array = array($array);
-                    $content .= '[' . $section . ']'.PHP_EOL;
-                    foreach( $array as $key => $value )
-                        $content .= PHP_TAB.$key.' = '.$value.PHP_EOL;
+        try {
+            $content = null;
+            switch($this->Options['driver'])
+            {
+                case 'JSON':
+                    $content .= json_encode(serialize($this->Config));
+                    break;
+                case 'INI':
+                    $content .= '; @file generator: Iriven France Php "'.get_class($this).'" Class'.PHP_EOL;
+                    $content .= '; @Last Update: '.date('Y-m-d H:i:s').PHP_EOL;
                     $content .= PHP_EOL;
-                }
-                break;
-            case 'YML':
-                $content .= yaml_emit ($this->Config, YAML_UTF8_ENCODING , YAML_LN_BREAK );
-                break;
-            default:
-                $content .= '<?php'.PHP_EOL;
-                $content .= 'return ';
-                $content .= var_export($this->Config, true) . ';';
-                $content = preg_replace('/array\s+\(/', '[', $content);
-                $content = preg_replace('/,(\s+)\)/', '$1]', $content);
-                break;
+                    foreach($this->Config as $section => $array)
+                    {
+                        is_array($array) or $array = array($array);
+                        $content .= '[' . $section . ']'.PHP_EOL;
+                        foreach( $array as $key => $value )
+                            $content .= $key.' = '.$value.PHP_EOL;
+                        $content .= PHP_EOL;
+                    }
+                    break;
+                case 'YML':
+                    $content .= yaml_emit ($this->Config, YAML_UTF8_ENCODING , YAML_LN_BREAK );
+                    break;
+                default:
+                    $content .= '<?php'.PHP_EOL;
+                    $content .= 'return ';
+                    $content .= var_export($this->Config, true) . ';';
+                    $content = preg_replace('/array\s+\(/', '[', $content);
+                    $content = preg_replace('/,(\s+)\)/', '$1]', $content);
+                    break;
+            }
+            file_put_contents($this->targetFile, $content, LOCK_EX);
         }
-        file_put_contents($this->targetFile, $content, LOCK_EX);
-        @chmod($this->targetFile,0644);
+        catch (Exception $e)
+        {  trigger_error($e->getMessage(),E_USER_ERROR);}
         return true;
     }
     /**
      * fin de la classe
      */
-
 }
