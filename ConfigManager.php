@@ -290,9 +290,11 @@ class ConfigManager
     {
 	try {
 		if( !is_writeable( $this->targetFile ) )
+		{
 			if(@chmod($this->targetFile,0775))
 				throw new Exception('Cant write to file: '.$this->targetFile);
-		       $content = null;
+		}
+	$content = null;
         switch($this->Options['driver'])
         {
             case 'JSON':
@@ -323,9 +325,8 @@ class ConfigManager
                 break;
         }
         file_put_contents($this->targetFile, $content, LOCK_EX);
-	if( is_writeable( $this->targetFile ) )
-		if(@chmod($this->targetFile,0644))
-			throw new Exception('Cant write to file: '.$this->targetFile);
+	if(@chmod($this->targetFile,0644))
+		throw new Exception('Cant write to file: '.$this->targetFile);
 	    } 
 	     catch (Exception $e) 
 	     {  trigger_error($e->getMessage(),E_USER_ERROR);}
