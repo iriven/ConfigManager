@@ -9,7 +9,6 @@ use Exception;
  */
 class ConfigManager
 {
-const PHP_TAB = "\t";
     /**
     * Chemin complet du fichier de configuration
     */
@@ -289,8 +288,11 @@ const PHP_TAB = "\t";
      */
      private function Save()
     {
-        if( !is_writeable( $this->targetFile ) ) @chmod($this->targetFile,0775);
-        $content = null;
+	try {
+		if( !is_writeable( $this->targetFile ) )
+			if(@chmod($this->targetFile,0775))
+				throw new Exception('Cant write to file: '.$this->targetFile);
+		       $content = null;
         switch($this->Options['driver'])
         {
             case 'JSON':
@@ -305,7 +307,7 @@ const PHP_TAB = "\t";
                     is_array($array) or $array = array($array);
                     $content .= '[' . $section . ']'.PHP_EOL;
                     foreach( $array as $key => $value )
-                        $content .= PHP_TAB.$key.' = '.$value.PHP_EOL;
+                        $content .= $key.' = '.$value.PHP_EOL;
                     $content .= PHP_EOL;
                 }
                 break;
@@ -321,7 +323,12 @@ const PHP_TAB = "\t";
                 break;
         }
         file_put_contents($this->targetFile, $content, LOCK_EX);
-        @chmod($this->targetFile,0644);
+	if( is_writeable( $this->targetFile ) )
+		if(@chmod($this->targetFile,0644))
+			throw new Exception('Cant write to file: '.$this->targetFile);
+	    } 
+	     catch (Exception $e) 
+	     {  trigger_error($e->getMessage(),E_USER_ERROR);}
         return true;
     }
     /**
