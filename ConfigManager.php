@@ -279,7 +279,7 @@ class ConfigManager
         }
         catch(Exception $b)
         {
-            dtrigger_error($b->getMessage(),E_USER_ERROR);
+            trigger_error($b->getMessage(),E_USER_ERROR);
         }
         return $this->Config;
     }
