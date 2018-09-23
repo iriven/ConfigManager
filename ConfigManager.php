@@ -9,6 +9,7 @@ use Exception;
  */
 class ConfigManager
 {
+	const PHP_TAB = "\t";
     /**
     * Chemin complet du fichier de configuration
     */
