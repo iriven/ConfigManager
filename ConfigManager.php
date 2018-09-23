@@ -216,7 +216,7 @@ const PHP_TAB = "\t";
             $Options['driver'] = strtoupper(pathinfo($Options['filename'], PATHINFO_EXTENSION));
         else
             $Options['filename']= $Options['filename'].'.'.strtolower($default['driver']);
-	     if(!in_array($Options['driver'],$this->$availableDrivers))
+	     if(!in_array($Options['driver'],$this->availableDrivers))
             throw new Exception('ERROR: driver "'.$Options['driver'].'" not supported');
 	    $this->Options = array_merge($default,$Options);
         return $this->Options;
